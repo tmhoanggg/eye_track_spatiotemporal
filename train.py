@@ -17,6 +17,9 @@ import losses
 from eye_dataset import EyeTrackingDataset
 from tenn_model import TennSt
 from generate_val_results import check_val_score
+import torch._dynamo
+torch._dynamo.config.suppress_errors = True
+
 
 filename = 'results_ablation.csv'
 
