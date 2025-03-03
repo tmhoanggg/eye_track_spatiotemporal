@@ -50,7 +50,8 @@ def main(checkpoint_path, data_path):
 
     model = TennSt(**OC.to_container(config.model))
     model.eval()
-    model.load_state_dict(weights)
+    #model.load_state_dict(weights)
+    model.load_state_dict(weights, strict=False)
 
     testset = EyeTrackingDataset(data_path, 'test', **OC.to_container(config.dataset))
     event_frames_list = [event_frames for (event_frames, _, _) in testset]
@@ -59,8 +60,8 @@ def main(checkpoint_path, data_path):
     for event_frames in event_frames_list:
         pred = streaming_inference(model, event_frames[None, :])
         pred = process_detector_prediction(pred)
-        predictions.append(pred.squeeze(0)[..., ::5])
-        #predictions.append(pred.squeeze(0))
+        #predictions.append(pred.squeeze(0)[..., ::5])
+        predictions.append(pred.squeeze(0))
         
     predictions = torch.cat(predictions, dim=-1)
 
