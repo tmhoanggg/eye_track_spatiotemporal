@@ -80,4 +80,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    main(args.checkpoint, args.data)
+    main(args.checkpoint_path, args.data)
