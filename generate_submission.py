@@ -39,7 +39,8 @@ checkpoint_path = 'weights/submission.ckpt'
 #checkpoint_path = '/home/scrouzet/AIS2024_CVPR/train_tenn/outputs/2024-03-22/06-03-29/lightning_logs/version_0/checkpoints/last.ckpt'
 
 config = OC.load(config_path)
-data_path = Path(__file__).parent / 'event_data'
+#data_path = Path(__file__).parent / 'event_data'
+data_path = '/kaggle/input/ais2025-data/event_data'
 
 weights = torch.load(checkpoint_path, map_location='cpu')['state_dict']
 mystr = list(weights.keys())[0].split('backbone')[0] # get the str before backbone
