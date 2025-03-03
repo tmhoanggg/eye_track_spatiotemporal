@@ -1,4 +1,5 @@
 import os
+import argparse
 from pathlib import Path
 import time
 
@@ -32,41 +33,51 @@ def streaming_inference(model, frames):
     return predictions
 
 
-config_path = 'config_submission.yaml'
-checkpoint_path = 'weights/submission.ckpt'
+def main(checkpoint_path, data_path):
+    config_path = 'config_submission.yaml'
+    #checkpoint_path = 'weights/submission.ckpt'
 
-#config_path = '/home/scrouzet/AIS2024_CVPR/train_tenn/outputs/2024-03-22/06-03-29/lightning_logs/version_0/config.yaml'
-#checkpoint_path = '/home/scrouzet/AIS2024_CVPR/train_tenn/outputs/2024-03-22/06-03-29/lightning_logs/version_0/checkpoints/last.ckpt'
+    #config_path = '/home/scrouzet/AIS2024_CVPR/train_tenn/outputs/2024-03-22/06-03-29/lightning_logs/version_0/config.yaml'
+    #checkpoint_path = '/home/scrouzet/AIS2024_CVPR/train_tenn/outputs/2024-03-22/06-03-29/lightning_logs/version_0/checkpoints/last.ckpt'
 
-config = OC.load(config_path)
-#data_path = Path(__file__).parent / 'event_data'
-data_path = '/kaggle/input/ais2025-data/event_data'
+    config = OC.load(config_path)
+    #data_path = Path(__file__).parent / 'event_data'
+    #data_path = '/kaggle/input/ais2025-data/event_data'
 
-weights = torch.load(checkpoint_path, map_location='cpu')['state_dict']
-mystr = list(weights.keys())[0].split('backbone')[0] # get the str before backbone
-weights = {k.partition(mystr)[2]: v for k, v in weights.items() if k.startswith(mystr)}
+    weights = torch.load(checkpoint_path, map_location='cpu')['state_dict']
+    mystr = list(weights.keys())[0].split('backbone')[0] # get the str before backbone
+    weights = {k.partition(mystr)[2]: v for k, v in weights.items() if k.startswith(mystr)}
 
-model = TennSt(**OC.to_container(config.model))
-model.eval()
-model.load_state_dict(weights)
+    model = TennSt(**OC.to_container(config.model))
+    model.eval()
+    model.load_state_dict(weights)
 
-testset = EyeTrackingDataset(data_path, 'test', **OC.to_container(config.dataset))
-event_frames_list = [event_frames for (event_frames, _, _) in testset]
+    testset = EyeTrackingDataset(data_path, 'test', **OC.to_container(config.dataset))
+    event_frames_list = [event_frames for (event_frames, _, _) in testset]
 
-predictions = []
-for event_frames in event_frames_list:
-    pred = streaming_inference(model, event_frames[None, :])
-    pred = process_detector_prediction(pred)
-    #predictions.append(pred.squeeze(0)[..., ::5])
-    predictions.append(pred.squeeze(0))
-    
-predictions = torch.cat(predictions, dim=-1)
+    predictions = []
+    for event_frames in event_frames_list:
+        pred = streaming_inference(model, event_frames[None, :])
+        pred = process_detector_prediction(pred)
+        #predictions.append(pred.squeeze(0)[..., ::5])
+        predictions.append(pred.squeeze(0))
+        
+    predictions = torch.cat(predictions, dim=-1)
 
-predictions[0] *= 80
-predictions[1] *= 60
+    predictions[0] *= 80
+    predictions[1] *= 60
 
-predictions_numpy = predictions.detach().numpy().T
-predictions_numpy = np.concatenate([np.arange(len(predictions_numpy))[:, None], predictions_numpy], axis=1)
+    predictions_numpy = predictions.detach().numpy().T
+    predictions_numpy = np.concatenate([np.arange(len(predictions_numpy))[:, None], predictions_numpy], axis=1)
 
-df = pd.DataFrame(predictions_numpy, columns=['row_id', 'x', 'y'])
-df.to_csv('submission.csv', index=False)
+    df = pd.DataFrame(predictions_numpy, columns=['row_id', 'x', 'y'])
+    df.to_csv('submission.csv', index=False)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Eye tracking inference script.")
+    parser.add_argument('--checkpoint_path', type=str, required=True, help="Path to model checkpoint (.ckpt).")
+    parser.add_argument('--data_path', type=str, default='/kaggle/input/ais2025-data/event_data', help="Path to event data.")
+
+    args = parser.parse_args()
+
+    main(args.checkpoint, args.data)
