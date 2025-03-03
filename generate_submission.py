@@ -57,7 +57,8 @@ predictions = []
 for event_frames in event_frames_list:
     pred = streaming_inference(model, event_frames[None, :])
     pred = process_detector_prediction(pred)
-    predictions.append(pred.squeeze(0)[..., ::5])
+    #predictions.append(pred.squeeze(0)[..., ::5])
+    predictions.append(pred.squeeze(0))
     
 predictions = torch.cat(predictions, dim=-1)
 
