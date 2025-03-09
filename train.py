@@ -46,7 +46,6 @@ class CustomModule(LightningModule):
         epochs = config.trainer.epochs
         detector_head = config.model.detector_head
         activity_regularization = config.trainer.activity_regularization
-        self.num_workers = config.trainer.num_workers
         
         #self.model = torch.compile(TennSt(**OC.to_container(config.model)))
         self.model = TennSt(**OC.to_container(config.model))
