@@ -214,4 +214,3 @@ class TennSt(nn.Module):
             return self.head((self.backbone(input)))
         else:
             return self.head(self.backbone(input).mean((-2, -1)))
-        
