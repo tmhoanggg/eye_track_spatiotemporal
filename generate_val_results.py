@@ -15,7 +15,8 @@ torch.set_grad_enabled(False)
 
 
 def check_val_score(checkpoint_path, checkpoint_config, remove_blinks=False, test_on_val=True):
-    data_path = Path(__file__).parent / 'event_data'
+    #data_path = Path(__file__).parent / 'event_data'
+    data_path = '/kaggle/input/ais2025-data/event_data'
 
     if test_on_val:
         # Val Data
