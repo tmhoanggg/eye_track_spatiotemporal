@@ -46,6 +46,7 @@ class CustomModule(LightningModule):
         epochs = config.trainer.epochs
         detector_head = config.model.detector_head
         activity_regularization = config.trainer.activity_regularization
+        self.num_workers = config.trainer.num_workers
         
         #self.model = torch.compile(TennSt(**OC.to_container(config.model)))
         self.model = TennSt(**OC.to_container(config.model))
@@ -127,10 +128,10 @@ class CustomModule(LightningModule):
         return [optimizer], [scheduler]
             
     def train_dataloader(self):
-        return DataLoader(self.trainset, shuffle=True, drop_last=True, batch_size=self.batch_size)
+        return DataLoader(self.trainset, shuffle=True, drop_last=True, batch_size=self.batch_size, num_workers=self.num_workers)
 
     def val_dataloader(self):
-        return DataLoader(self.valset, shuffle=False, drop_last=False, batch_size=self.batch_size)
+        return DataLoader(self.valset, shuffle=False, drop_last=False, batch_size=self.batch_size, num_workers=self.num_workers)
     
 
 @hydra.main(version_base='1.1', config_path=".", config_name="config.yaml")
