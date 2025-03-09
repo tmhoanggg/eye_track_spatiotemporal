@@ -215,12 +215,7 @@ class TennSt(nn.Module):
             return self.head((self.backbone(input)))
         else:
             return self.head(self.backbone(input).mean((-2, -1)))
-        
 
-
-import torch
-import torch.nn as nn
-from torchvision import models
 
 class TennStPretrained(nn.Module):
     def __init__(
@@ -245,6 +240,9 @@ class TennStPretrained(nn.Module):
         else:
             raise ValueError("Unsupported backbone, try 'resnet50'")
         
+        # 🔥 Fix: Modify first convolution to accept 2 channels instead of 3
+        self.feature_extractor[0] = nn.Conv2d(2, 64, kernel_size=7, stride=2, padding=3, bias=False)
+
         self.conv_adapter = nn.Conv3d(1, backbone_out_channels, kernel_size=(1, 3, 3), stride=1, padding=(0, 1, 1))
         
         depthwises = [False] * (10 - n_depthwise_layers) + [True] * n_depthwise_layers
