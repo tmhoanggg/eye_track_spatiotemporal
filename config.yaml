@@ -21,4 +21,3 @@ trainer:
   batch_size: 32
   device: 0
   activity_regularization : 0
-  num_workers: 4

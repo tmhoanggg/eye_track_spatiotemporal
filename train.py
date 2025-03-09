@@ -128,10 +128,10 @@ class CustomModule(LightningModule):
         return [optimizer], [scheduler]
             
     def train_dataloader(self):
-        return DataLoader(self.trainset, shuffle=True, drop_last=True, batch_size=self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.trainset, shuffle=True, drop_last=True, batch_size=self.batch_size)
 
     def val_dataloader(self):
-        return DataLoader(self.valset, shuffle=False, drop_last=False, batch_size=self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.valset, shuffle=False, drop_last=False, batch_size=self.batch_size)
     
 
 @hydra.main(version_base='1.1', config_path=".", config_name="config.yaml")
