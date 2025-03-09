@@ -6,7 +6,7 @@ dataset:
   spatial_affine: true
   temporal_flip: true
   temporal_scale: true
-  temporal_shift: false
+  temporal_shift: true
 
 model:
   channels: [2, 8, 16, 32, 48, 64, 80, 96, 112, 128, 256]

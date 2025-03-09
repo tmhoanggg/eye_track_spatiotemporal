@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-from torchvision import models
 
 import warnings
 
@@ -215,89 +214,3 @@ class TennSt(nn.Module):
             return self.head((self.backbone(input)))
         else:
             return self.head(self.backbone(input).mean((-2, -1)))
-
-
-class TennStPretrained(nn.Module):
-    def __init__(
-        self, 
-        channels, 
-        t_kernel_size, 
-        n_depthwise_layers, 
-        detector_head, 
-        detector_depthwise, 
-        full_conv3d=False,
-        norms='mixed',
-        pretrained_backbone='resnet50'  # Use a large pretrained model
-    ):
-        super().__init__()
-        self.detector = detector_head
-        
-        # Load a pretrained backbone (can be changed to other large models)
-        if pretrained_backbone == 'resnet50':
-            backbone = models.resnet50(pretrained=True)
-            self.feature_extractor = nn.Sequential(*list(backbone.children())[:-2])  # Remove FC layers
-            backbone_out_channels = 2048  # Adjust based on backbone output
-        else:
-            raise ValueError("Unsupported backbone, try 'resnet50'")
-        
-        # 🔥 Fix: Modify first convolution to accept 2 channels instead of 3
-        self.feature_extractor[0] = nn.Conv2d(2, 64, kernel_size=7, stride=2, padding=3, bias=False)
-
-        self.conv_adapter = nn.Conv3d(1, backbone_out_channels, kernel_size=(1, 3, 3), stride=1, padding=(0, 1, 1))
-        
-        depthwises = [False] * (10 - n_depthwise_layers) + [True] * n_depthwise_layers
-        temporals = [True, False] * 5
-        
-        self.backbone = nn.Sequential()
-        for i in range(len(depthwises)):
-            in_channels, out_channels = channels[i], channels[i+1]
-            depthwise = depthwises[i]
-            temporal = temporals[i]
-            
-            if temporal:
-                self.backbone.append(TemporalBlock(in_channels, out_channels, 
-                                                   kernel_size=t_kernel_size, depthwise=depthwise,
-                                                   full_conv3d=full_conv3d, norms=norms))
-            else:
-                self.backbone.append(SpatialBlock(in_channels, out_channels, depthwise=depthwise,
-                                                  full_conv3d=full_conv3d,
-                                                  kernel_size=t_kernel_size if full_conv3d else 1,
-                                                  norms=norms))
-        
-        if detector_head:
-            self.head = nn.Sequential(
-                TemporalBlock(channels[-1], channels[-1], t_kernel_size, depthwise=detector_depthwise), 
-                nn.Conv3d(channels[-1], channels[-1], (1, 3, 3), (1, 1, 1), (0, 1, 1)), 
-                nn.ReLU(), 
-                nn.Conv3d(channels[-1], 3, 1), 
-            )
-        else:
-            self.head = nn.Sequential(
-                nn.Conv1d(channels[-1], channels[-1], 1), 
-                nn.ReLU(), 
-                nn.Conv1d(channels[-1], 2, 1), 
-            )
-    
-    def streaming(self, enabled=True):
-        for name, module in self.named_modules():
-            if name and hasattr(module, 'streaming'):
-                module.streaming(enabled)
-                
-    def reset_memory(self):
-        for name, module in self.named_modules():
-            if name and hasattr(module, 'reset_memory'):
-                module.reset_memory()
-    
-    def forward(self, input: torch.Tensor) -> torch.Tensor:
-        batch_size, channels, depth, height, width = input.shape
-        
-        # Feature extraction using the pretrained model
-        extracted_features = self.feature_extractor(input[:, :, 0, :, :])  # Extract features from first frame
-        extracted_features = extracted_features.unsqueeze(2).expand(-1, -1, depth, -1, -1)  # Expand across depth
-        
-        adapted_features = self.conv_adapter(extracted_features)
-        
-        if self.detector:
-            return self.head((self.backbone(adapted_features)))
-        else:
-            return self.head(self.backbone(adapted_features).mean((-2, -1)))

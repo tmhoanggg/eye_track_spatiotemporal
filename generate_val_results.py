@@ -8,7 +8,7 @@ import torch
 import matplotlib.pyplot as plt
 
 from eye_dataset import EyeTrackingDataset
-from tenn_model import TennSt, TennStPretrained
+from tenn_model import TennSt
 from baseline_model import EfficientNet_GRU
 from losses import process_detector_prediction, OutputHook, MacsEstimationHook
 
@@ -30,9 +30,7 @@ def check_val_score(checkpoint_path, checkpoint_config, remove_blinks=False, tes
     print(checkpoint_path)
 
     config = OC.load(checkpoint_config)
-    #model = TennSt(**OC.to_container(config.model))
-    model = TennStPretrained(**OC.to_container(config.model))
-    
+    model = TennSt(**OC.to_container(config.model))
     model.eval()
     
     if checkpoint_path is not None:

@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 
 import losses
 from eye_dataset import EyeTrackingDataset
-from tenn_model import TennSt, TennStPretrained
+from tenn_model import TennSt
 from generate_val_results import check_val_score
 from baseline_model import EfficientNet_GRU
 import torch._dynamo
@@ -48,8 +48,7 @@ class CustomModule(LightningModule):
         activity_regularization = config.trainer.activity_regularization
         
         #self.model = torch.compile(TennSt(**OC.to_container(config.model)))
-        #self.model = TennSt(**OC.to_container(config.model))
-        self.model = TennStPretrained(**OC.to_container(config.model))
+        self.model = TennSt(**OC.to_container(config.model))
         
         self.trainset = EyeTrackingDataset(data_path, 'train', config.trainer.device, **OC.to_container(config.dataset))
         self.valset = EyeTrackingDataset(data_path, 'val', config.trainer.device, **OC.to_container(config.dataset)) # frames_per_segment=127, device=device)
