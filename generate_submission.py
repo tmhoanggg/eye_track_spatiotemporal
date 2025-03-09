@@ -33,8 +33,8 @@ def streaming_inference(model, frames):
     return predictions
 
 
-def main(checkpoint_path, data_path):
-    config_path = 'config_submission.yaml'
+def main(checkpoint_path, data_path, config_path):
+    #config_path = 'config_submission.yaml'
     #checkpoint_path = 'weights/submission.ckpt'
 
     #config_path = '/home/scrouzet/AIS2024_CVPR/train_tenn/outputs/2024-03-22/06-03-29/lightning_logs/version_0/config.yaml'
@@ -50,8 +50,7 @@ def main(checkpoint_path, data_path):
 
     model = TennSt(**OC.to_container(config.model))
     model.eval()
-    #model.load_state_dict(weights)
-    model.load_state_dict(weights, strict=False)
+    model.load_state_dict(weights)
 
     testset = EyeTrackingDataset(data_path, 'test', **OC.to_container(config.dataset))
     event_frames_list = [event_frames for (event_frames, _, _) in testset]
@@ -60,8 +59,8 @@ def main(checkpoint_path, data_path):
     for event_frames in event_frames_list:
         pred = streaming_inference(model, event_frames[None, :])
         pred = process_detector_prediction(pred)
-        predictions.append(pred.squeeze(0)[..., ::5])
-        #predictions.append(pred.squeeze(0))
+        #predictions.append(pred.squeeze(0)[..., ::5])
+        predictions.append(pred.squeeze(0))
         
     predictions = torch.cat(predictions, dim=-1)
 
@@ -78,7 +77,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Eye tracking inference script.")
     parser.add_argument('--checkpoint_path', type=str, required=True, help="Path to model checkpoint (.ckpt).")
     parser.add_argument('--data_path', type=str, default='/kaggle/input/ais2025-data/event_data', help="Path to event data.")
+    parser.add_argument('--config_path', type=str,required=True, help="Path to config file.")
 
     args = parser.parse_args()
 
-    main(args.checkpoint_path, args.data_path)
+    main(args.checkpoint_path, args.data_path, args.config_path)
