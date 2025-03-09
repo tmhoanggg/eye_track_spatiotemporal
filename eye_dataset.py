@@ -13,6 +13,17 @@ rand_range = lambda amin, amax: amin + (amax - amin) * np.random.rand()
 
 val_files = ["1_6", "2_4", "4_4", "6_2", "7_4", "9_1", "10_3", "11_2", "12_3"]
 
+################ Define Bin Size Adjustment Function ################
+def adjust_bin_sizes(density, base_size=10000, beta=1.0, min_size=5000, max_size=20000):
+    """Adjust bin sizes inversely proportional to density."""
+    density_min, density_max = density.min(), density.max()
+    if density_max == density_min:  # Avoid division by zero
+        return torch.full_like(density, base_size, dtype=torch.float)
+    normalized_density = (density - density_min) / (density_max - density_min)
+    bin_sizes = base_size * (1 + beta * normalized_density).reciprocal()
+    return bin_sizes.clamp(min_size, max_size)
+####################################################################
+
 def get_index(file_lens, index):
     file_lens_cumsum = np.cumsum(np.array(file_lens))
     file_id = np.searchsorted(file_lens_cumsum, index, side='right')
@@ -95,7 +106,8 @@ def events_to_frames(events, size, num_frames, spatial_downsample, temporal_down
 
 
 class EventRandomAffine():
-    """Perform random affine transformations on the events and labels
+    """
+    Perform random affine transformations on the events and labels
     """
     def __init__(self, size, 
                  degrees=15, translate=(0.2, 0.2), scale=(0.8, 1.2), spatial_jitter=None, 
@@ -290,6 +302,27 @@ class EyeTrackingDataset(Dataset):
         
         event_segment = event[:, start_ind.item():end_ind.item()]
         event_segment[-1] -= start_t
+
+        ################## Add Density Estimation Logic ##################
+        # Inside __getitem__, after "event_segment[-1] -= start_t"
+        # Add density estimation
+        def compute_density(events, time_window, num_bins, lookback=10000):  # lookback in microseconds, e.g., 10ms
+            timestamps = events[-1]
+            density = []
+            bin_edges = torch.linspace(0, time_window * num_bins, num_bins + 1)
+            for i in range(len(bin_edges) - 1):
+                bin_start = bin_edges[i]
+                lookback_start = max(0, bin_start - lookback)
+                num_events = torch.sum((timestamps >= lookback_start) & (timestamps < bin_start))
+                density.append(num_events.item() / (bin_start - lookback_start + 1e-6))  # Avoid division by zero
+            return torch.tensor(density)
+
+        # Compute density for the segment
+        event_density = compute_density(event_segment, self.time_window, self.frames_per_segment)
+
+        # Adjust bin sizes inversely proportional to density
+        bin_sizes = adjust_bin_sizes(event_density)
+        ###################################################################
         
         start_label_id = segment_id * self.frames_per_segment
         end_label_id = (segment_id + 1) * self.frames_per_segment
@@ -310,4 +343,3 @@ class EyeTrackingDataset(Dataset):
         label_segment = torch.tensor(np.stack([x_interp, y_interp, closeness], axis=1)).type_as(label)
         
         return self._process_data(event_segment, label_segment)
-        
