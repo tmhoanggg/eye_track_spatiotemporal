@@ -33,18 +33,18 @@ def streaming_inference(model, frames):
     return predictions
 
 
-def main(checkpoint_path, data_path, config_path):
+def main(args):
     #config_path = 'config_submission.yaml'
     #checkpoint_path = 'weights/submission.ckpt'
 
     #config_path = '/home/scrouzet/AIS2024_CVPR/train_tenn/outputs/2024-03-22/06-03-29/lightning_logs/version_0/config.yaml'
     #checkpoint_path = '/home/scrouzet/AIS2024_CVPR/train_tenn/outputs/2024-03-22/06-03-29/lightning_logs/version_0/checkpoints/last.ckpt'
 
-    config = OC.load(config_path)
+    config = OC.load(args.config_path)
     #data_path = Path(__file__).parent / 'event_data'
     #data_path = '/kaggle/input/ais2025-data/event_data'
 
-    weights = torch.load(checkpoint_path, map_location='cpu')['state_dict']
+    weights = torch.load(args.checkpoint_path, map_location='cpu')['state_dict']
     mystr = list(weights.keys())[0].split('backbone')[0] # get the str before backbone
     weights = {k.partition(mystr)[2]: v for k, v in weights.items() if k.startswith(mystr)}
 
@@ -52,7 +52,7 @@ def main(checkpoint_path, data_path, config_path):
     model.eval()
     model.load_state_dict(weights)
 
-    testset = EyeTrackingDataset(data_path, 'test', **OC.to_container(config.dataset))
+    testset = EyeTrackingDataset(args.data_path, 'test', **OC.to_container(config.dataset))
     event_frames_list = [event_frames for (event_frames, _, _) in testset]
 
     predictions = []
@@ -71,14 +71,15 @@ def main(checkpoint_path, data_path, config_path):
     predictions_numpy = np.concatenate([np.arange(len(predictions_numpy))[:, None], predictions_numpy], axis=1)
 
     df = pd.DataFrame(predictions_numpy, columns=['row_id', 'x', 'y'])
-    df.to_csv('submission.csv', index=False)
+    df.to_csv(f'{args.submission_name}.csv', index=False)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Eye tracking inference script.")
     parser.add_argument('--checkpoint_path', type=str, required=True, help="Path to model checkpoint (.ckpt).")
     parser.add_argument('--data_path', type=str, default='/kaggle/input/ais2025-data/event_data', help="Path to event data.")
     parser.add_argument('--config_path', type=str,required=True, help="Path to config file.")
+    parser.add_argument('--submission_name', type=str, default='submission.csv', help="Name of the submission file.")
 
     args = parser.parse_args()
 
-    main(args.checkpoint_path, args.data_path, args.config_path)
+    main(args)
