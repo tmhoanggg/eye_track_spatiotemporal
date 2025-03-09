@@ -9,7 +9,7 @@ import torch
 from omegaconf import OmegaConf as OC
 
 from eye_dataset import EyeTrackingDataset
-from tenn_model import TennSt
+from tenn_model import TennSt, TennStPretrained
 from baseline_model import EfficientNet_GRU
 from losses import process_detector_prediction
 
@@ -50,7 +50,8 @@ def main(args):
     weights = {k.partition(mystr)[2]: v for k, v in weights.items() if k.startswith(mystr)}
 
     #model = TennSt(**OC.to_container(config.model))
-    model = EfficientNet_GRU()
+    model = TennStPretrained(**OC.to_container(config.model))
+    
     model.eval()
     model.load_state_dict(weights)
 
