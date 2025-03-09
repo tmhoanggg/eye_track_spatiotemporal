@@ -49,7 +49,7 @@ class CustomModule(LightningModule):
         
         #self.model = torch.compile(TennSt(**OC.to_container(config.model)))
         #self.model = TennSt(**OC.to_container(config.model))
-        self.model = EfficientNet_GRU(**OC.to_container(config.model))
+        self.model = EfficientNet_GRU()
         
         self.trainset = EyeTrackingDataset(data_path, 'train', config.trainer.device, **OC.to_container(config.dataset))
         self.valset = EyeTrackingDataset(data_path, 'val', config.trainer.device, **OC.to_container(config.dataset)) # frames_per_segment=127, device=device)

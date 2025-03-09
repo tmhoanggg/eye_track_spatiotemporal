@@ -50,7 +50,7 @@ def main(args):
     weights = {k.partition(mystr)[2]: v for k, v in weights.items() if k.startswith(mystr)}
 
     #model = TennSt(**OC.to_container(config.model))
-    model = EfficientNet_GRU(**OC.to_container(config.model))
+    model = EfficientNet_GRU()
     model.eval()
     model.load_state_dict(weights)
 
