@@ -10,6 +10,7 @@ from omegaconf import OmegaConf as OC
 
 from eye_dataset import EyeTrackingDataset
 from tenn_model import TennSt
+from baseline_model import EfficientNet_GRU
 from losses import process_detector_prediction
 
 # NOTE: this submission script runs the network in streaming mode, and does not use the GPU
@@ -48,7 +49,8 @@ def main(args):
     mystr = list(weights.keys())[0].split('backbone')[0] # get the str before backbone
     weights = {k.partition(mystr)[2]: v for k, v in weights.items() if k.startswith(mystr)}
 
-    model = TennSt(**OC.to_container(config.model))
+    #model = TennSt(**OC.to_container(config.model))
+    model = EfficientNet_GRU(**OC.to_container(config.model))
     model.eval()
     model.load_state_dict(weights)
 
