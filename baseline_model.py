@@ -185,9 +185,8 @@ class SwinT_GRU(nn.Module):
         return out
 
 class EfficientNet_GRU(nn.Module):
-    def __init__(self, args):
+    def __init__(self):
         super(EfficientNet_GRU, self).__init__()
-        self.args = args
         
         # Load EfficientNet-B0 pretrained
         self.effnet = models.efficientnet_b0(pretrained=True)
