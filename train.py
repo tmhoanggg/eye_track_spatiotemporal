@@ -14,8 +14,7 @@ from torch.optim import AdamW
 from torch.utils.data import DataLoader
 
 import losses
-#from eye_dataset import EyeTrackingDataset
-from dataset import EyeTrackingDataset
+from eye_dataset import EyeTrackingDataset
 from tenn_model import TennSt
 from generate_val_results import check_val_score
 from baseline_model import EfficientNet_GRU
