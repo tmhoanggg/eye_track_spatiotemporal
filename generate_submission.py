@@ -8,7 +8,8 @@ import pandas as pd
 import torch
 from omegaconf import OmegaConf as OC
 
-from eye_dataset import EyeTrackingDataset
+#from eye_dataset import EyeTrackingDataset
+from dataset import EyeTrackingDataset
 from tenn_model import TennSt
 from baseline_model import EfficientNet_GRU
 from losses import process_detector_prediction
