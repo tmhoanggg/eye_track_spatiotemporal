@@ -141,7 +141,8 @@ def main(config: OC):
     module = CustomModule(data_path, config)
 
     checkpoint_callback = ModelCheckpoint(
-        monitor='val_metric', 
+        #monitor='val_metric', 
+        monitor='val_distance',
         mode='max', 
         save_last=True, 
         every_n_epochs=1, 
