@@ -16,6 +16,6 @@ model:
   detector_depthwise: false
 
 trainer:
-  epochs: 1000
+  epochs: 300
   batch_size: 32
   device: cpu
