@@ -1,6 +1,6 @@
 dataset:
   time_window: 10000
-  frames_per_segment: 200
+  frames_per_segment: 50
   spatial_downsample: [5, 5]
   events_interpolation: bilinear
   spatial_affine: true
