@@ -8,7 +8,8 @@ warnings.formatwarning = lambda message, category, filename, lineno, line=None: 
     f'{category.__name__}: {message}\n'
 
 class CausalGroupNorm(nn.GroupNorm):
-    """A GroupNorm that does not use temporal statistics, to ensure causality
+    """
+    A GroupNorm that does not use temporal statistics, to ensure causality
     """
     def __init__(self, num_groups, num_channels, **kwargs):
         super().__init__(num_groups, num_channels, **kwargs)
