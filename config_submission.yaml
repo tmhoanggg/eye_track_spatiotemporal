@@ -17,5 +17,5 @@ model:
 
 trainer:
   epochs: 200
-  batch_size: 2
+  batch_size: 16
   device: cpu
