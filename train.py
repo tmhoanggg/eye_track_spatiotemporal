@@ -142,8 +142,11 @@ def main(config: OC):
 
     checkpoint_callback = ModelCheckpoint(
         #monitor='val_metric', 
+        #mode='max',
+        # Cần val_distance min mới tốt hơn
         monitor='val_distance',
-        mode='max', 
+        mode='min', 
+        save_top_k=3,  # Save the top 3 models
         save_last=True, 
         every_n_epochs=1, 
         filename='{epoch}-{val_metric:.2f}', 
