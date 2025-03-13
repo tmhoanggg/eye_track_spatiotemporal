@@ -50,7 +50,7 @@ class CustomModule(LightningModule):
         activity_regularization = config.trainer.activity_regularization
         
         #self.model = torch.compile(TennSt(**OC.to_container(config.model)))
-        self.model = TennStEfficientNet(**OC.to_container(config.model))
+        self.model = TennStViT(**OC.to_container(config.model))
         
         self.trainset = EyeTrackingDataset(data_path, 'train', config.trainer.device, **OC.to_container(config.dataset))
         self.valset = EyeTrackingDataset(data_path, 'val', config.trainer.device, **OC.to_container(config.dataset)) # frames_per_segment=127, device=device)

@@ -51,7 +51,7 @@ def main(args):
     mystr = list(weights.keys())[0].split('backbone')[0] # get the str before backbone
     weights = {k.partition(mystr)[2]: v for k, v in weights.items() if k.startswith(mystr)}
 
-    model = TennStEfficientNet(**OC.to_container(config.model))
+    model = TennStViT(**OC.to_container(config.model))
     model.eval()
     model.load_state_dict(weights)
 

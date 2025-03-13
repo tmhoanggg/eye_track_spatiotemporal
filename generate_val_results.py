@@ -34,7 +34,7 @@ def check_val_score(checkpoint_path, checkpoint_config, remove_blinks=False, tes
     print(checkpoint_path)
 
     config = OC.load(checkpoint_config)
-    model = TennStEfficientNet(**OC.to_container(config.model))
+    model = TennStViT(**OC.to_container(config.model))
     model.eval()
     
     if checkpoint_path is not None:
