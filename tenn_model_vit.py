@@ -63,8 +63,8 @@ class SpatialBlock(nn.Module):
     def __init__(self, 
                  in_channels, 
                  out_channels, 
-                 embed_dim=128, 
-                 num_heads=4, 
+                 embed_dim=64, 
+                 num_heads=2, 
                  norms='mixed'):
         super().__init__()
         self.norms = norms
@@ -83,7 +83,7 @@ class TemporalBlock(nn.Module):
     def __init__(self, 
                  in_channels, 
                  out_channels, 
-                 embed_dim=128, 
+                 embed_dim=64, 
                  num_heads=4, 
                  norms='mixed'):
         super().__init__()
