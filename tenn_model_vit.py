@@ -198,7 +198,7 @@ class TemporalBlock(nn.Module):
         return self.block(self.fifo)
         
 
-class TennSt(nn.Module):
+class TennStViT(nn.Module):
     def __init__(
         self, 
         channels, 
