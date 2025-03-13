@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torchvision.models.video import efficientnet3d_b0
+from torchvision import models
 
 class PatchEmbed3D(nn.Module):
     """Converts 3D input into patch embeddings."""
@@ -17,7 +17,7 @@ class EfficientNet3DBlock(nn.Module):
     """Replaces ViTBlock with EfficientNet3D."""
     def __init__(self, in_channels):
         super().__init__()
-        self.efficient_net = efficientnet3d_b0(pretrained=True)
+        self.efficient_net = models.efficientnet_b0(pretrained=True)
         self.efficient_net.features[0][0] = nn.Conv3d(in_channels, 32, kernel_size=3, stride=1, padding=1, bias=False)
 
     def forward(self, x):
