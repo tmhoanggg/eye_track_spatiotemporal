@@ -46,18 +46,35 @@ class TransformerBlock(nn.Module):
 class ViT(nn.Module):
     def __init__(self, in_channels, patch_size, embed_dim, num_heads, ff_dim, num_layers, out_channels):
         super().__init__()
+        self.patch_size = patch_size  # Lưu patch_size để sử dụng trong forward
         self.patch_embed = PatchEmbedding(in_channels, patch_size, embed_dim)
-        self.pos_embed = nn.Parameter(torch.zeros(1, (224//patch_size)**2, embed_dim))  # Giả định H=W=224
+        # Không khởi tạo pos_embed cố định ở đây nữa
         self.transformer = nn.ModuleList([
             TransformerBlock(embed_dim, num_heads, ff_dim) for _ in range(num_layers)
         ])
         self.to_out = nn.Linear(embed_dim, out_channels)
 
+    def _generate_pos_embed(self, num_patches, embed_dim, device):
+        # Tạo positional embedding động dựa trên số lượng patch và embed_dim
+        pos_embed = torch.zeros(1, num_patches, embed_dim, device=device)
+        # Có thể sử dụng cách khởi tạo đơn giản (như random) hoặc sinusoidal encoding
+        position = torch.arange(0, num_patches, dtype=torch.float, device=device).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, embed_dim, 2, dtype=torch.float, device=device) * (-torch.log(torch.tensor(10000.0)) / embed_dim))
+        pos_embed[0, :, 0::2] = torch.sin(position * div_term)
+        pos_embed[0, :, 1::2] = torch.cos(position * div_term)
+        return pos_embed
+
     def forward(self, x):
         # Input: (B*T, C, H, W)
         B_T, C, H, W = x.shape
         x = self.patch_embed(x)  # (B*T, num_patches, embed_dim)
-        x = x + self.pos_embed  # Add positional embedding
+        num_patches = x.shape[1]  # Số lượng patch thực tế từ đầu vào
+        embed_dim = x.shape[2]
+
+        # Tạo positional embedding động dựa trên số lượng patch
+        pos_embed = self._generate_pos_embed(num_patches, embed_dim, x.device)
+        x = x + pos_embed  # Add positional embedding
+
         x = x.transpose(0, 1)  # (num_patches, B*T, embed_dim)
         for block in self.transformer:
             x = block(x)
