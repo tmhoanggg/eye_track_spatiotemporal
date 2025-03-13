@@ -13,7 +13,7 @@ model:
   n_depthwise_layers: 4
   t_kernel_size: 5
   detector_head: true
-  detector_depthwise: true
+  #detector_depthwise: true
   norms : mixed # ['mixed', 'all_bn', 'all_gn']
 
 trainer:
