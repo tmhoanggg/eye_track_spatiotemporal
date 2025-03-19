@@ -77,7 +77,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Eye tracking inference script.")
     parser.add_argument('--checkpoint_path', type=str, required=True, help="Path to model checkpoint (.ckpt).")
-    parser.add_argument('--data_path', type=str, default='/kaggle/input/ais2024-augmented-data/augmented_data_2024', help="Path to event data.")
+    parser.add_argument('--data_path', type=str, default='/kaggle/input/ais2024-data/event_data', help="Path to event data.")
     parser.add_argument('--config_path', type=str,required=True, help="Path to config file.")
     parser.add_argument('--submission_name', type=str, default='submission.csv', help="Name of the submission file.")
 

@@ -139,7 +139,8 @@ def main(config: OC):
     #data_path = '/kaggle/input/ais2025-data/event_data'
     #data_path = '/kaggle/input/ais2025-augmented-2/event_data'
     #data_path = '/kaggle/input/augmented-flip-deletion/event_data'
-    data_path = '/kaggle/input/ais2024-augmented-data/augmented_data_2024'
+    #data_path = '/kaggle/input/ais2024-augmented-data/augmented_data_2024'
+    data_path = '/kaggle/input/ais2024-data/event_data'
     module = CustomModule(data_path, config)
 
     checkpoint_callback = ModelCheckpoint(
