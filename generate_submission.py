@@ -73,7 +73,7 @@ def main(args):
 
     df = pd.DataFrame(predictions_numpy, columns=['row_id', 'x', 'y'])
     os.makedirs('submissions_2024', exist_ok=True)
-    df.to_csv(f'./submissions/{args.submission_name}.csv', index=False)
+    df.to_csv(f'./submissions_2024/{args.submission_name}.csv', index=False)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Eye tracking inference script.")
