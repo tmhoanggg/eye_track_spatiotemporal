@@ -72,12 +72,13 @@ def main(args):
     predictions_numpy = np.concatenate([np.arange(len(predictions_numpy))[:, None], predictions_numpy], axis=1)
 
     df = pd.DataFrame(predictions_numpy, columns=['row_id', 'x', 'y'])
-    df.to_csv(f'{args.submission_name}.csv', index=False)
+    os.makedirs('submissions_2024', exist_ok=True)
+    df.to_csv(f'./submissions/{args.submission_name}.csv', index=False)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Eye tracking inference script.")
     parser.add_argument('--checkpoint_path', type=str, required=True, help="Path to model checkpoint (.ckpt).")
-    parser.add_argument('--data_path', type=str, default='/kaggle/input/ais2024-data/event_data', help="Path to event data.")
+    parser.add_argument('--data_path', type=str, default='"D:/Contest/CVPR/data_2024/event_data"', help="Path to event data.")
     parser.add_argument('--config_path', type=str,required=True, help="Path to config file.")
     parser.add_argument('--submission_name', type=str, default='submission.csv', help="Name of the submission file.")
 
