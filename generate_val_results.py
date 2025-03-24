@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 
 from eye_dataset import EyeTrackingDataset
 from tenn_model import TennSt
-from baseline_model import EfficientNet_GRU
 from losses import process_detector_prediction, OutputHook, MacsEstimationHook
 
 torch.set_grad_enabled(False)
@@ -17,11 +16,11 @@ torch.set_grad_enabled(False)
 
 def check_val_score(checkpoint_path, checkpoint_config, remove_blinks=False, test_on_val=True):
     #data_path = Path(__file__).parent / 'event_data'
-    #data_path = '/kaggle/input/ais2025-data/event_data'
+    data_path = '/kaggle/input/ais2025-data/event_data'
     #data_path = '/kaggle/input/ais2025-augmented-2/event_data'
     #data_path = '/kaggle/input/augmented-flip-deletion/event_data'
     #data_path = '/kaggle/input/ais2024-augmented-data/augmented_data_2024'
-    data_path = '/kaggle/input/ais2024-data/event_data'
+    #data_path = '/kaggle/input/ais2024-data/event_data'
 
     if test_on_val:
         # Val Data

@@ -10,7 +10,6 @@ from omegaconf import OmegaConf as OC
 
 from eye_dataset import EyeTrackingDataset
 from tenn_model import TennSt
-from baseline_model import EfficientNet_GRU
 from losses import process_detector_prediction
 
 # NOTE: this submission script runs the network in streaming mode, and does not use the GPU

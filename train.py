@@ -17,7 +17,6 @@ import losses
 from eye_dataset import EyeTrackingDataset
 from tenn_model import TennSt
 from generate_val_results import check_val_score
-from baseline_model import EfficientNet_GRU
 import torch._dynamo
 torch._dynamo.config.suppress_errors = True
 
@@ -136,11 +135,11 @@ class CustomModule(LightningModule):
 @hydra.main(version_base='1.1', config_path=".", config_name="config.yaml")
 def main(config: OC):
     #data_path = Path(__file__).parent / 'event_data'
-    #data_path = '/kaggle/input/ais2025-data/event_data'
+    data_path = '/kaggle/input/ais2025-data/event_data'
     #data_path = '/kaggle/input/ais2025-augmented-2/event_data'
     #data_path = '/kaggle/input/augmented-flip-deletion/event_data'
     #data_path = '/kaggle/input/ais2024-augmented-data/augmented_data_2024'
-    data_path = '/kaggle/input/ais2024-data/event_data'
+    #data_path = '/kaggle/input/ais2024-data/event_data'
     module = CustomModule(data_path, config)
 
     checkpoint_callback = ModelCheckpoint(
@@ -152,7 +151,7 @@ def main(config: OC):
         save_top_k=3,  # Save the top 3 models
         save_last=True, 
         every_n_epochs=1, 
-        filename='{epoch}-{val_metric:.2f}', 
+        filename='{epoch}-{val_distance:.2f}', 
     )
 
 
