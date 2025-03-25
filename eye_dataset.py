@@ -13,6 +13,55 @@ rand_range = lambda amin, amax: amin + (amax - amin) * np.random.rand()
 
 val_files = ["1_6", "2_4", "4_4", "6_2", "7_4", "9_1", "10_3", "11_2", "12_3"]
 
+train_files = [
+    "1_2", "1_3", "1_4", "1_5", "2_1", "2_3", "2_5", "3_2", "4_1", "4_3", "4_5",
+    "5_1", "6_3", "6_5", "7_1", "7_2", "7_3", "8_1", "8_4", "8_5", "9_2", "9_3",
+    "9_4", "9_5", "10_1", "11_1", "11_4", "12_1", "12_2", "12_5", "13_1"
+]
+
+train_files_temporal_shift = [
+    "1_2_temporal_shift", "1_3_temporal_shift", "1_4_temporal_shift", "1_5_temporal_shift",
+    "2_1_temporal_shift", "2_3_temporal_shift", "2_5_temporal_shift", "3_2_temporal_shift",
+    "4_1_temporal_shift", "4_3_temporal_shift", "4_5_temporal_shift", "5_1_temporal_shift",
+    "6_3_temporal_shift", "6_5_temporal_shift", "7_1_temporal_shift", "7_2_temporal_shift",
+    "7_3_temporal_shift", "8_1_temporal_shift", "8_4_temporal_shift", "8_5_temporal_shift",
+    "9_2_temporal_shift", "9_3_temporal_shift", "9_4_temporal_shift", "9_5_temporal_shift",
+    "10_1_temporal_shift", "11_1_temporal_shift", "11_4_temporal_shift", "12_1_temporal_shift",
+    "12_2_temporal_shift", "12_5_temporal_shift", "13_1_temporal_shift"
+]
+
+train_files_event_deletion = [
+    "1_2_event_deletion", "1_3_event_deletion", "1_4_event_deletion", "1_5_event_deletion",
+    "2_1_event_deletion", "2_3_event_deletion", "2_5_event_deletion", "3_2_event_deletion",
+    "4_1_event_deletion", "4_3_event_deletion", "4_5_event_deletion", "5_1_event_deletion",
+    "6_3_event_deletion", "6_5_event_deletion", "7_1_event_deletion", "7_2_event_deletion",
+    "7_3_event_deletion", "8_1_event_deletion", "8_4_event_deletion", "8_5_event_deletion",
+    "9_2_event_deletion", "9_3_event_deletion", "9_4_event_deletion", "9_5_event_deletion",
+    "10_1_event_deletion", "11_1_event_deletion", "11_4_event_deletion", "12_1_event_deletion",
+    "12_2_event_deletion", "12_5_event_deletion", "13_1_event_deletion"
+]
+
+train_files_spatial_flip = [
+    "1_2_spatial_flip", "1_3_spatial_flip", "1_4_spatial_flip", "1_5_spatial_flip",
+    "2_1_spatial_flip", "2_3_spatial_flip", "2_5_spatial_flip", "3_2_spatial_flip",
+    "4_1_spatial_flip", "4_3_spatial_flip", "4_5_spatial_flip", "5_1_spatial_flip",
+    "6_3_spatial_flip", "6_5_spatial_flip", "7_1_spatial_flip", "7_2_spatial_flip",
+    "7_3_spatial_flip", "8_1_spatial_flip", "8_4_spatial_flip", "8_5_spatial_flip",
+    "9_2_spatial_flip", "9_3_spatial_flip", "9_4_spatial_flip", "9_5_spatial_flip",
+    "10_1_spatial_flip", "11_1_spatial_flip", "11_4_spatial_flip", "12_1_spatial_flip",
+    "12_2_spatial_flip", "12_5_spatial_flip", "13_1_spatial_flip"
+]
+
+# w/o temporal shift
+#train_files = train_files + train_files_spatial_flip + train_files_event_deletion
+
+# w/o spatial flip
+train_files = train_files + train_files_temporal_shift + train_files_event_deletion
+print(train_files)
+
+# w/o event deletion
+#train_files = train_files + train_files_spatial_flip + train_files_temporal_shift
+
 def get_index(file_lens, index):
     file_lens_cumsum = np.cumsum(np.array(file_lens))
     file_id = np.searchsorted(file_lens_cumsum, index, side='right')
@@ -200,7 +249,7 @@ class EyeTrackingDataset(Dataset):
         
         dir_paths = natsorted(base_path.glob('*'))
         if mode == 'train':
-            dir_paths = [dir_path for dir_path in dir_paths if dir_path.name not in val_files]
+            dir_paths = [dir_path for dir_path in dir_paths if dir_path.name in train_files]
         elif mode == 'val' or (mode == 'test' and test_on_val):
             dir_paths = [dir_path for dir_path in dir_paths if dir_path.name in val_files]
 

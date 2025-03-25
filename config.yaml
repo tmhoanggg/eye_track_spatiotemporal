@@ -17,7 +17,7 @@ model:
   norms : mixed # ['mixed', 'all_bn', 'all_gn']
 
 trainer:
-  epochs: 1000
+  epochs: 200
   batch_size: 32
   device: 0
   activity_regularization : 0
