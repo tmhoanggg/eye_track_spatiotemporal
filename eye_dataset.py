@@ -56,11 +56,10 @@ train_files_spatial_flip = [
 #train_files = train_files + train_files_spatial_flip + train_files_event_deletion
 
 # w/o spatial flip
-train_files = train_files + train_files_temporal_shift + train_files_event_deletion
-print(train_files)
+#train_files = train_files + train_files_temporal_shift + train_files_event_deletion
 
 # w/o event deletion
-#train_files = train_files + train_files_spatial_flip + train_files_temporal_shift
+train_files = train_files + train_files_spatial_flip + train_files_temporal_shift
 
 def get_index(file_lens, index):
     file_lens_cumsum = np.cumsum(np.array(file_lens))
